@@ -122,7 +122,7 @@ const Index = () => {
                 disabled
               >
                 <FileText className="h-6 w-6 text-gray-400" />
-                <span className="text-sm">New Form</span>
+                <span className="text-sm">Online Form Link</span>
                 <span className="text-xs text-gray-400">(Coming Soon)</span>
               </Button>
             </div>
