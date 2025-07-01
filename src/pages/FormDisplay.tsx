@@ -1,16 +1,18 @@
-
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, FileText, Edit, Save, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { ArrowLeft, FileText, Edit, Save, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { isSensitiveContent, maskSensitiveData, isPinVerified } from "@/utils/security";
 
 const FormDisplay = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
+  const [pinVerified, setPinVerified] = useState(false);
 
   // Mock form data based on ID
   const getFormData = (formId: string) => {
@@ -20,14 +22,16 @@ const FormDisplay = () => {
         type: "Tax Document",
         uploadDate: "2024-06-15",
         status: "Completed",
-        content: "Form Type: 1040 Individual Income Tax Return\nTax Year: 2023\nFiler Name: John Doe\nSSN: ***-**-6789\nFiling Status: Single\nAdjusted Gross Income: $75,000\nTotal Tax: $8,250\nRefund Amount: $1,200"
+        content: "Form Type: 1040 Individual Income Tax Return\nTax Year: 2023\nFiler Name: John Doe\nSSN: 123-45-6789\nFiling Status: Single\nAdjusted Gross Income: $75,000\nTotal Tax: $8,250\nRefund Amount: $1,200",
+        isSensitive: true
       },
       "2": {
         name: "Insurance Claim Form",
         type: "Insurance",
         uploadDate: "2024-06-10",
         status: "In Progress",
-        content: "Claim Number: INS-2024-001\nPolicy Holder: John Doe\nPolicy Number: POL-789456\nDate of Incident: 2024-06-08\nClaim Amount: $2,500\nDescription: Vehicle damage from parking lot incident"
+        content: "Claim Number: INS-2024-001\nPolicy Holder: John Doe\nPolicy Number: POL-789456\nDate of Incident: 2024-06-08\nClaim Amount: $2,500\nDescription: Vehicle damage from parking lot incident",
+        isSensitive: true
       }
     };
     return forms[formId] || forms["1"];
@@ -35,7 +39,34 @@ const FormDisplay = () => {
 
   const [form, setForm] = useState(() => getFormData(id || "1"));
 
+  useEffect(() => {
+    // Check if PIN was verified from navigation state or session
+    const navPinVerified = location.state?.pinVerified;
+    const sessionPinVerified = isPinVerified();
+    
+    if (navPinVerified || sessionPinVerified) {
+      setPinVerified(true);
+    } else if (form.isSensitive || isSensitiveContent(form.content)) {
+      // Redirect to PIN verification if form is sensitive and PIN not verified
+      navigate('/pin-verification', {
+        state: {
+          from: '/form-display',
+          formId: id
+        }
+      });
+    }
+  }, [form, id, navigate, location.state]);
+
   const handleEdit = () => {
+    if ((form.isSensitive || isSensitiveContent(form.content)) && !pinVerified) {
+      navigate('/pin-verification', {
+        state: {
+          from: '/form-display',
+          formId: id
+        }
+      });
+      return;
+    }
     setIsEditing(true);
     setEditContent(form.content);
   };
@@ -63,6 +94,19 @@ const FormDisplay = () => {
       default:
         return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const displayContent = () => {
+    const isFormSensitive = form.isSensitive || isSensitiveContent(form.content);
+    if (isFormSensitive && !pinVerified) {
+      return maskSensitiveData(form.content);
+    }
+    return form.content;
+  };
+
+  const shouldShowEncryptedImage = () => {
+    const isFormSensitive = form.isSensitive || isSensitiveContent(form.content);
+    return isFormSensitive && !pinVerified;
   };
 
   return (
@@ -98,9 +142,17 @@ const FormDisplay = () => {
           <CardContent className="p-4">
             <h3 className="font-semibold text-gray-900 mb-3">Form Image</h3>
             <div className="aspect-[3/4] bg-gray-200 rounded-lg overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                <FileText className="h-16 w-16 text-blue-600" />
-              </div>
+              {shouldShowEncryptedImage() ? (
+                <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex flex-col items-center justify-center">
+                  <Shield className="h-16 w-16 text-red-600 mb-2" />
+                  <p className="text-red-700 text-sm font-medium">Encrypted</p>
+                  <p className="text-red-600 text-xs">PIN required</p>
+                </div>
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+                  <FileText className="h-16 w-16 text-blue-600" />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -151,15 +203,20 @@ const FormDisplay = () => {
             ) : (
               <div className="bg-gray-50 rounded-lg p-3">
                 <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono">
-                  {form.content}
+                  {displayContent()}
                 </pre>
               </div>
             )}
 
-            <div className="mt-3">
+            <div className="mt-3 flex gap-2">
               <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
                 {form.type}
               </span>
+              {(form.isSensitive || isSensitiveContent(form.content)) && (
+                <span className="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                  Sensitive
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>

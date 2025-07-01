@@ -17,6 +17,7 @@ import DocumentImage from "./pages/DocumentImage";
 import DocumentDisplay from "./pages/DocumentDisplay";
 import AccessForm from "./pages/AccessForm";
 import FormDisplay from "./pages/FormDisplay";
+import PinVerification from "./pages/PinVerification";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/document-display/:id" element={<DocumentDisplay />} />
           <Route path="/access-form" element={<AccessForm />} />
           <Route path="/form-display/:id" element={<FormDisplay />} />
+          <Route path="/pin-verification" element={<PinVerification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
