@@ -4,21 +4,70 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, FileImage } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { isSensitiveContent } from "@/utils/security";
 
 const DocumentImage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock document images
+  // Mock document images with content for sensitivity detection
   const documentImages = [
-    { id: 1, name: "Invoice - OfficeSupply Co.", date: "2024-06-15", category: "Financial" },
-    { id: 2, name: "Receipt - Coffee Shop", date: "2024-06-20", category: "Receipt" },
-    { id: 3, name: "Contract - Client Agreement", date: "2024-06-10", category: "Legal" },
-    { id: 4, name: "Medical Report", date: "2024-06-05", category: "Medical" },
-    { id: 5, name: "Insurance Policy", date: "2024-06-01", category: "Insurance" },
-    { id: 6, name: "Bank Statement", date: "2024-05-30", category: "Financial" },
-    { id: 7, name: "Utility Bill", date: "2024-05-25", category: "Bill" },
-    { id: 8, name: "Travel Receipt", date: "2024-05-20", category: "Receipt" }
+    { 
+      id: 1, 
+      name: "Invoice - OfficeSupply Co.", 
+      date: "2024-06-15", 
+      category: "Financial",
+      content: "Invoice Number: INV-2024-0876, Total: $1,245.50, Due Date: 2024-07-15"
+    },
+    { 
+      id: 2, 
+      name: "Receipt - Coffee Shop", 
+      date: "2024-06-20", 
+      category: "Receipt",
+      content: "Amount: $12.50, Date: 2024-06-20, Merchant: Downtown Coffee"
+    },
+    { 
+      id: 3, 
+      name: "Contract - Client Agreement", 
+      date: "2024-06-10", 
+      category: "Legal",
+      content: "Contract Type: Service Agreement, Client: ABC Corp, Value: $50,000"
+    },
+    { 
+      id: 4, 
+      name: "Medical Report", 
+      date: "2024-06-05", 
+      category: "Medical",
+      content: "Patient: John Doe, SSN: 123-45-6789, Diagnosis: Annual checkup"
+    },
+    { 
+      id: 5, 
+      name: "Insurance Policy", 
+      date: "2024-06-01", 
+      category: "Insurance",
+      content: "Policy Number: POL-789456, Premium: $2,400 annually"
+    },
+    { 
+      id: 6, 
+      name: "Bank Statement", 
+      date: "2024-05-30", 
+      category: "Financial",
+      content: "Account Balance: $15,750.00, Statement Period: May 2024"
+    },
+    { 
+      id: 7, 
+      name: "Utility Bill", 
+      date: "2024-05-25", 
+      category: "Bill",
+      content: "Electric Bill: $125.50, Due Date: 2024-06-15"
+    },
+    { 
+      id: 8, 
+      name: "Travel Receipt", 
+      date: "2024-05-20", 
+      category: "Receipt",
+      content: "Hotel Stay: $340.00, Conference Trip Expense"
+    }
   ];
 
   const handleSearch = () => {
@@ -78,9 +127,16 @@ const DocumentImage = () => {
                   <p className="text-white text-xs font-medium truncate">{image.name}</p>
                   <div className="flex justify-between items-center mt-1">
                     <p className="text-white/80 text-xs">{image.date}</p>
-                    <span className="px-1 py-0.5 bg-white/20 text-white text-xs rounded">
-                      {image.category}
-                    </span>
+                    <div className="flex gap-1">
+                      <span className="px-1 py-0.5 bg-white/20 text-white text-xs rounded">
+                        {image.category}
+                      </span>
+                      {isSensitiveContent(image.content) && (
+                        <span className="px-1 py-0.5 bg-red-500/80 text-white text-xs rounded">
+                          Sensitive
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,7 @@
 export const isSensitiveContent = (content: string): boolean => {
   const sensitivePatterns = [
     /\b\d{3}-\d{2}-\d{4}\b/, // SSN pattern
-    /\$[\d,]+\.?\d*/g, // Money values
+    /\$[\d,]+\.?\d*/g, // Money values (we'll check amount separately)
     /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/, // Credit card numbers
     /\b[A-Z]{2}\d{6,8}\b/, // ID numbers
     /\bpassport\b/i,
@@ -13,7 +13,25 @@ export const isSensitiveContent = (content: string): boolean => {
     /\baccount number\b/i,
   ];
 
-  return sensitivePatterns.some(pattern => pattern.test(content));
+  // Check for SSN
+  if (/\b\d{3}-\d{2}-\d{4}\b/.test(content)) {
+    return true;
+  }
+
+  // Check for money values greater than $1000
+  const moneyMatches = content.match(/\$[\d,]+\.?\d*/g);
+  if (moneyMatches) {
+    for (const match of moneyMatches) {
+      const amount = parseFloat(match.replace(/[$,]/g, ''));
+      if (amount > 1000) {
+        return true;
+      }
+    }
+  }
+
+  // Check other sensitive patterns (excluding money which we handled above)
+  const otherPatterns = sensitivePatterns.slice(2); // Skip money pattern since we handled it separately
+  return otherPatterns.some(pattern => pattern.test(content));
 };
 
 export const maskSensitiveData = (content: string): string => {
@@ -22,8 +40,11 @@ export const maskSensitiveData = (content: string): string => {
   // Mask SSN
   maskedContent = maskedContent.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '***-**-****');
   
-  // Mask money values
-  maskedContent = maskedContent.replace(/\$[\d,]+\.?\d*/g, '$***.**');
+  // Mask money values greater than $1000
+  maskedContent = maskedContent.replace(/\$[\d,]+\.?\d*/g, (match) => {
+    const amount = parseFloat(match.replace(/[$,]/g, ''));
+    return amount > 1000 ? '$***.**' : match;
+  });
   
   // Mask credit card numbers
   maskedContent = maskedContent.replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, '****-****-****-****');

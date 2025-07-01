@@ -4,47 +4,53 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { isSensitiveContent } from "@/utils/security";
 
 const AccessForm = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock uploaded forms
+  // Mock uploaded forms with content for sensitivity detection
   const uploadedForms = [
     {
       id: 1,
       name: "Tax Form 1040",
       type: "Tax Document",
       uploadDate: "2024-06-15",
-      status: "Completed"
+      status: "Completed",
+      content: "Form Type: 1040 Individual Income Tax Return, SSN: 123-45-6789, Adjusted Gross Income: $75,000"
     },
     {
       id: 2,
       name: "Insurance Claim Form",
       type: "Insurance",
       uploadDate: "2024-06-10",
-      status: "In Progress"
+      status: "In Progress",
+      content: "Claim Number: INS-2024-001, Claim Amount: $2,500, Date of Incident: 2024-06-08"
     },
     {
       id: 3,
       name: "Job Application",
       type: "Employment",
       uploadDate: "2024-06-05",
-      status: "Pending"
+      status: "Pending",
+      content: "Position: Software Engineer, Expected Salary: $85,000, Experience: 5 years"
     },
     {
       id: 4,
       name: "Medical History Form",
       type: "Medical",
       uploadDate: "2024-06-01",
-      status: "Completed"
+      status: "Completed",
+      content: "Patient Name: John Doe, Date of Birth: 1990-05-15, Medical Record Number: MR123456"
     },
     {
       id: 5,
       name: "Loan Application",
       type: "Financial",
       uploadDate: "2024-05-25",
-      status: "Under Review"
+      status: "Under Review",
+      content: "Loan Amount: $25,000, Annual Income: $95,000, Credit Score: 750"
     }
   ];
 
@@ -127,9 +133,16 @@ const AccessForm = () => {
                   </h3>
                   <p className="text-xs text-gray-600 mb-2">{form.type}</p>
                   <div className="flex flex-col gap-1">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(form.status)}`}>
-                      {form.status}
-                    </span>
+                    <div className="flex gap-1">
+                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(form.status)}`}>
+                        {form.status}
+                      </span>
+                      {isSensitiveContent(form.content) && (
+                        <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                          Sensitive
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-500">{form.uploadDate}</p>
                   </div>
                 </div>
