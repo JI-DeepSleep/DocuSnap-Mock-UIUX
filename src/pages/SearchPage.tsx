@@ -79,7 +79,17 @@ const SearchPage = () => {
 
         <div className="space-y-4">
           {searchResults.map((result) => (
-            <Card key={result.id} className="shadow-sm hover:shadow-md transition-shadow">
+            <Card 
+              key={result.id} 
+              className="shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => {
+                if (result.type === 'form') {
+                  navigate(`/form-display/${result.id}`);
+                } else {
+                  navigate(`/document-display/${result.id}`);
+                }
+              }}
+            >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">

@@ -1,18 +1,22 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Camera, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const CameraCapture = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCaptured, setIsCaptured] = useState(false);
+  
+  // Get source from location state (document vs form)
+  const source = location.state?.source || 'document';
 
   const handleCapture = () => {
     setIsCaptured(true);
     // Simulate capture delay
     setTimeout(() => {
-      navigate('/image-processing');
+      navigate('/image-processing', { state: { source } });
     }, 1000);
   };
 

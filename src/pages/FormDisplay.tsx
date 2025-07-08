@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, FileText, Edit, Save, X, Shield } from "lucide-react";
+import { ArrowLeft, FileText, Edit, Save, X, Shield, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -132,6 +132,15 @@ const FormDisplay = () => {
                 </span>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/fill-form', { state: { formId: id } })}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 flex items-center gap-1"
+            >
+              <FileCheck className="h-4 w-4" />
+              Fill
+            </Button>
           </div>
         </div>
       </div>

@@ -1,13 +1,17 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FileImage } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FileImage, Crop, Palette, Move3D, Contrast } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ImageProcessing = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedImage, setProcessedImage] = useState(false);
+  
+  // Get source from location state (document vs form)
+  const source = location.state?.source || 'document';
 
   const handleAutoProcess = () => {
     setIsProcessing(true);
@@ -18,7 +22,12 @@ const ImageProcessing = () => {
   };
 
   const handleDoneEditing = () => {
-    navigate('/');
+    // Navigate based on source
+    if (source === 'form') {
+      navigate('/access-form');
+    } else {
+      navigate('/document-images');
+    }
   };
 
   return (
@@ -83,27 +92,31 @@ const ImageProcessing = () => {
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 flex items-center gap-2"
             >
+              <Crop className="h-4 w-4" />
               Crop
             </Button>
             <Button
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 flex items-center gap-2"
             >
-              Grayscale
+              <Palette className="h-4 w-4" />
+              Filters
             </Button>
             <Button
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20 col-span-2"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 col-span-2 flex items-center gap-2"
             >
-              4-Point Perspective Correction
+              <Move3D className="h-4 w-4" />
+              Perspective
             </Button>
             <Button
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20 col-span-2"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 col-span-2 flex items-center gap-2"
             >
-              High-Contrast B&W Filter
+              <Contrast className="h-4 w-4" />
+              Enhance
             </Button>
           </div>
         </div>

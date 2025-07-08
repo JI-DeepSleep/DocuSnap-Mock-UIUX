@@ -1,10 +1,14 @@
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, FileImage } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const LocalMedia = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get source from location state (document vs form)
+  const source = location.state?.source || 'document';
 
   // Mock local images
   const mockImages = Array.from({ length: 12 }, (_, i) => ({
@@ -14,7 +18,7 @@ const LocalMedia = () => {
 
   const handleImageSelect = (imageId: number) => {
     console.log('Selected image:', imageId);
-    navigate('/image-processing');
+    navigate('/image-processing', { state: { source } });
   };
 
   return (

@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, FileText, ZoomIn, ZoomOut } from "lucide-react";
+import { ArrowLeft, FileText, ZoomIn, ZoomOut, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,16 +12,16 @@ const FillForm = () => {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [isAutoFilled, setIsAutoFilled] = useState(false);
 
-  // Mock form data
+  // Mock form data with source document info
   const formData = [
-    { field: "Full Name", value: "John Doe", canRetrieve: true },
-    { field: "Social Security Number", value: "123-45-6789", canRetrieve: true },
-    { field: "Date of Birth", value: "01/15/1990", canRetrieve: true },
-    { field: "Address", value: "123 Main St, Anytown, ST 12345", canRetrieve: true },
-    { field: "Phone Number", value: "", canRetrieve: false },
-    { field: "Email Address", value: "john.doe@email.com", canRetrieve: true },
-    { field: "Occupation", value: "", canRetrieve: false },
-    { field: "Annual Income", value: "$75,000", canRetrieve: true }
+    { field: "Full Name", value: "John Doe", canRetrieve: true, source: "Tax Document 2023" },
+    { field: "Social Security Number", value: "123-45-6789", canRetrieve: true, source: "ID Card Scan" },
+    { field: "Date of Birth", value: "01/15/1990", canRetrieve: true, source: "ID Card Scan" },
+    { field: "Address", value: "123 Main St, Anytown, ST 12345", canRetrieve: true, source: "Utility Bill" },
+    { field: "Phone Number", value: "", canRetrieve: false, source: null },
+    { field: "Email Address", value: "john.doe@email.com", canRetrieve: true, source: "Previous Form" },
+    { field: "Occupation", value: "", canRetrieve: false, source: null },
+    { field: "Annual Income", value: "$75,000", canRetrieve: true, source: "Tax Document 2023" }
   ];
 
   const handleAutoFill = () => {
@@ -109,13 +109,21 @@ const FillForm = () => {
                   >
                     <div className="flex justify-between items-start gap-2">
                       <span className="font-medium text-sm text-gray-700">{item.field}:</span>
-                      <span className={`text-sm ${
-                        !item.canRetrieve 
-                          ? 'text-yellow-600 italic' 
-                          : 'text-gray-900'
-                      }`}>
-                        {item.value || 'Not available'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${
+                          !item.canRetrieve 
+                            ? 'text-yellow-600 italic' 
+                            : 'text-gray-900'
+                        }`}>
+                          {item.value || 'Not available'}
+                        </span>
+                        {item.canRetrieve && item.source && (
+                          <div className="flex items-center gap-1 text-xs text-blue-600">
+                            <ExternalLink className="h-3 w-3" />
+                            <span>{item.source}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     {!item.canRetrieve && (
                       <p className="text-xs text-yellow-600 mt-1">Cannot retrieve from database</p>

@@ -5,6 +5,7 @@ import { ArrowLeft, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSensitiveContent } from "@/utils/security";
+import BottomNavBar from "@/components/BottomNavBar";
 
 const AccessForm = () => {
   const navigate = useNavigate();
@@ -158,6 +159,10 @@ const AccessForm = () => {
             <p className="text-gray-600">Upload forms to get started</p>
           </div>
         )}
+      </div>
+      
+      <div className="pb-16">
+        <BottomNavBar />
       </div>
     </div>
   );

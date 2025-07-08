@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import BottomNavBar from "@/components/BottomNavBar";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-20 flex-col gap-2 border-2 border-dashed border-gray-300 hover:border-blue-400"
-                onClick={() => navigate('/camera')}
+                onClick={() => navigate('/camera', { state: { source: 'document' } })}
               >
                 <Camera className="h-6 w-6 text-gray-600" />
                 <span className="text-sm">Camera</span>
@@ -64,7 +65,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-20 flex-col gap-2 border-2 border-dashed border-gray-300 hover:border-blue-400"
-                onClick={() => navigate('/local-media')}
+                onClick={() => navigate('/local-media', { state: { source: 'document' } })}
               >
                 <FileImage className="h-6 w-6 text-gray-600" />
                 <span className="text-sm">Gallery</span>
@@ -84,7 +85,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-20 flex-col gap-2 border-2 border-dashed border-gray-300 hover:border-green-400"
-                onClick={() => navigate('/camera')}
+                onClick={() => navigate('/camera', { state: { source: 'form' } })}
               >
                 <Camera className="h-6 w-6 text-gray-600" />
                 <span className="text-sm">Camera</span>
@@ -92,7 +93,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-20 flex-col gap-2 border-2 border-dashed border-gray-300 hover:border-green-400"
-                onClick={() => navigate('/local-media')}
+                onClick={() => navigate('/local-media', { state: { source: 'form' } })}
               >
                 <FileImage className="h-6 w-6 text-gray-600" />
                 <span className="text-sm">Gallery</span>
@@ -154,6 +155,10 @@ const Index = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      <div className="pb-16">
+        <BottomNavBar />
       </div>
     </div>
   );
